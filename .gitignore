@@ -1,6 +1,80 @@
-# Compiled files
+# Terraform Compiled files
 *.tfstate
 *.tfstate.backup
 
-# Module directory
+# Terraform Module directory
 .terraform/
+
+# Chef
+.chef/*.pem
+.chef/encrypted_data_bag_secret
+
+# Ruby
+.rake_test_cache
+.rvmrc
+.rbenv-version
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+.elc
+auto-save-list
+tramp
+.\#*
+
+# Emacs org-mode
+.org-id-locations
+*_archive
+
+# SublimeText
+*.sublime-workspace
+
+# TextMate
+*.tmproj
+*.tmproject
+tmtags
+
+# Vim
+.*.s[a-w][a-z]
+*.un~
+Session.vim
+.netrwhist
+*~
+
+# OS X
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+*.pyc
+.idea/*
+*/.idea/*
+registry/templates/nginx/docker-registry.crt
+registry/templates/nginx/docker-registry.key
+registry/templates/nginx/certs.tar.gz
+*.tar.gz
+
+# Created by .gitignore support plugin (hsz.mobi)
+### Maven template
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+*.iml
+.kitchen
+*.retry
+*.ipynb
