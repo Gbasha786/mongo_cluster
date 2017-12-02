@@ -1,3 +1,4 @@
+# create VPC
 resource "aws_vpc" "mongo-vpc" {
   cidr_block = "10.0.0.0/16"
   enable_dns_support = true
@@ -7,6 +8,7 @@ resource "aws_vpc" "mongo-vpc" {
   }
 }
 
+# create subnets each for instance
 resource "aws_subnet" "public_subnet_us_east_1a" {
   vpc_id                  = "${aws_vpc.mongo-vpc.id}"
   cidr_block              = "10.0.101.0/24"
@@ -37,6 +39,7 @@ resource "aws_subnet" "public_subnet_us_east_1c" {
   }
 }
 
+# GW for VPC
 resource "aws_internet_gateway" "gw" {
   vpc_id = "${aws_vpc.mongo-vpc.id}"
   tags {
@@ -68,6 +71,7 @@ resource "aws_route_table_association" "public_subnet_us_east_1c_association" {
     route_table_id = "${aws_vpc.mongo-vpc.main_route_table_id}"
 }
 
+# create security group one for all instances
 resource "aws_security_group" "mongo-sec-gr" {
   name = "mongo-sec-gr"
   description = "Allow SSH traffic from the internet to mongo-sec-gr"
@@ -86,4 +90,20 @@ resource "aws_security_group" "mongo-sec-gr" {
     protocol = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+}
+
+# create Elastic IPs for each instance
+resource "aws_eip" "mongo-1b" {
+  instance = "${aws_instance.mongo-1b.id}"
+  vpc = true
+}
+
+resource "aws_eip" "mongo-1a" {
+  instance = "${aws_instance.mongo-1a.id}"
+  vpc = true
+}
+
+resource "aws_eip" "mongo-1c" {
+  instance = "${aws_instance.mongo-1c.id}"
+  vpc = true
 }

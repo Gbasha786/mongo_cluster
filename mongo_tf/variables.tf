@@ -13,6 +13,11 @@ description = "Key name for SSHing into EC2"
 default = "mongo-tf"
 }
 
+variable "volume_size_for_db" {
+description = "Define volume size for database"
+default = "1"
+}
+
 variable "amis" {
 description = "Base AMI to launch the instances"
 default = {
