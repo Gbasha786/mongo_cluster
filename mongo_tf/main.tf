@@ -1,17 +1,3 @@
-#resource "aws_instance" "mongo" {
-#ami = "${lookup(var.amis, var.region)}"
-#availability_zone = "us-east-1a"
-#instance_type = "t2.micro"
-#key_name = "${var.key_name}"
-#vpc_security_group_ids = ["${module.vpc.vpc_id}"] 
-##subnet_id = "${module.vpc.private_subnets}"
-#source_dest_check = false
-#
-#tags {
-#Name = "Mongo Database Server"
-#}
-#}
-
 resource "aws_instance" "mongo-1a" {
   ami = "ami-aa2ea6d0"
   instance_type = "t2.micro"
@@ -63,5 +49,10 @@ resource "aws_eip" "mongo-1c" {
   vpc = true
 }
 
+#resource "local_file" "aws_ansible_inventory" {
+#  content  = "[${var.name_prefix}]\n${join("\n",formatlist("%v ansible_host=%v", #aws_instance.node.*.tags.Name, aws_instance.node.*.public_ip))}\n"
+#  filename = "ansible/${var.name_prefix}"
+#  count    = "${lookup(map("aws", "${signum(var.nodes)}"), "${var.provider}" , "0")}"
+#}
 
 
