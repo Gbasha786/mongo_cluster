@@ -1,1 +1,1 @@
-create claster of mongo with terrraform 
+Create Mongo Replica cluster with Terraform 
