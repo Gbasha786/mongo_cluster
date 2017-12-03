@@ -1,5 +1,13 @@
-resource "template_file" "userdata" {
-    filename = "userdata.sh"
+resource "template_file" "userdata1" {
+    filename = "userdata1.sh"
+}
+
+resource "template_file" "userdata2" {
+    filename = "userdata2.sh"
+}
+
+resource "template_file" "userdata3" {
+    filename = "userdata3.sh"
 }
 
 
@@ -10,7 +18,7 @@ resource "aws_instance" "mongo-1a" {
   key_name = "${var.key_name}"
   subnet_id = "${aws_subnet.public_subnet_us_east_1a.id}"
   security_groups = ["${aws_security_group.mongo-sec-gr.id}"]
-  user_data = "${template_file.userdata.rendered}"
+  user_data = "${template_file.userdata1.rendered}"
   tags {
     Name = "mongo-1a"
   }
@@ -22,7 +30,7 @@ resource "aws_instance" "mongo-1b" {
   key_name = "${var.key_name}"
   subnet_id = "${aws_subnet.public_subnet_us_east_1b.id}"
   security_groups = ["${aws_security_group.mongo-sec-gr.id}"]
-  user_data = "${template_file.userdata.rendered}"
+  user_data = "${template_file.userdata2.rendered}"
   tags {
     Name = "mongo-1b"
   }
@@ -34,7 +42,7 @@ resource "aws_instance" "mongo-1c" {
   key_name = "${var.key_name}"
   subnet_id = "${aws_subnet.public_subnet_us_east_1c.id}"
   security_groups = ["${aws_security_group.mongo-sec-gr.id}"]
-  user_data = "${template_file.userdata.rendered}"
+  user_data = "${template_file.userdata3.rendered}"
   tags {
     Name = "mongo-1c"
   }

@@ -18,3 +18,6 @@ result=$(test)
 echo $result
 sleep 15
 done
+
+hostname mongo-1c
+echo '127.0.0.1 mongo-1c' | sudo tee -a /etc/hosts
