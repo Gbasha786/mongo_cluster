@@ -1,0 +1,14 @@
+version: '2'
+services:
+    mongo:
+      image: valch85/mongo-3.4:v2
+      container_name: mongo-3.4
+      network_mode: "host"
+      restart: always
+      ports:
+      - "27017:27017"
+      volumes:
+        - "/data/db:/var/lib/mongodb"
+        - "/data/logs:/var/log/mongodb"
+      environment:
+        TZ: "Europe/Kiev"

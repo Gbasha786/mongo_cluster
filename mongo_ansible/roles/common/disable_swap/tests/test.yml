@@ -1,0 +1,15 @@
+---
+- hosts: all
+  remote_user: root
+  become: true
+  gather_facts: False
+
+  roles:
+    - ../../prepare_system
+
+- hosts: all
+  remote_user: root
+  become: true
+
+  roles:
+    - ../../disable_swap

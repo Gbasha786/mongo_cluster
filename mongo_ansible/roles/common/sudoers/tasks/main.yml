@@ -1,0 +1,15 @@
+---
+- name: "Allow sudoers to run commands without a password"
+  copy:
+    dest: /etc/sudoers.d/sudo
+    content: "%sudo	ALL=(ALL:ALL)	NOPASSWD: ALL"
+    mode: "0440"
+    validate: "visudo -cf %s"
+
+- name: "Implement other sudoers access"
+  copy:
+    dest: "/etc/sudoers.d/{{ item.key }}"
+    content: "{{ item.value }}"
+    mode: "0440"
+    validate: "visudo -cf %s"
+  with_dict: "{{ sudoers_files }}"

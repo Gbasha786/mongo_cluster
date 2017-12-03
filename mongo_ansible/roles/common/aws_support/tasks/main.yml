@@ -1,0 +1,18 @@
+---
+- stat:
+    path: /etc/cloud/cloud.cfg
+  register: cloud_cfg
+
+- name: preserve hostname
+  replace:
+    path: /etc/cloud/cloud.cfg
+    regexp: 'preserve_hostname: false'
+    replace: 'preserve_hostname: true'
+  when: cloud_cfg.stat.exists
+
+- name: enable root ssh access
+  replace:
+    path: /etc/cloud/cloud.cfg
+    regexp: 'disable_root: true'
+    replace: 'disable_root: false'
+  when: cloud_cfg.stat.exists

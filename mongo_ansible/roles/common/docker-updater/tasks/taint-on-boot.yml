@@ -1,0 +1,10 @@
+---
+- name: deploy node taint on boot service
+  copy:
+    src=systemd/taint-on-boot.service
+    dest=/etc/systemd/system/taint-on-boot.service
+    owner=root
+    mode=0755
+
+- name: ensure taint-on-boot.service is enabled
+  service: name=taint-on-boot.service enabled=yes

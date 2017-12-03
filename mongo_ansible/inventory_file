@@ -1,0 +1,4 @@
+[defaults]
+mongo-1a   ansible_host=35.153.110.241
+mongo-1b   ansible_host=54.84.1.16
+mongo-1c   ansible_host=34.234.210.48

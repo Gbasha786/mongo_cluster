@@ -1,0 +1,11 @@
+[Unit]
+Description=Run compose updater
+
+[Timer]
+OnBootSec=40s
+RandomizedDelaySec=10m
+OnUnitInactiveSec=7m
+Unit=docker-updater.service
+
+[Install]
+WantedBy=timers.target

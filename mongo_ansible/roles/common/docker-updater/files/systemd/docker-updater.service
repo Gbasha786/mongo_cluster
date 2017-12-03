@@ -1,0 +1,11 @@
+[Unit]
+Description=Update docker images with docker-compose
+Requires=network.target
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/docker-updater.sh
+
+[Install]
+WantedBy=basic.target

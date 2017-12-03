@@ -1,0 +1,10 @@
+[Service]
+ExecStart=
+{% if docker_enable_fluentd and ansible_distribution_major_version|int >= 15 and ansible_distribution == "Ubuntu" -%}
+ExecStart=/usr/bin/dockerd -s overlay2 --live-restore --log-driver=journald
+{% else -%}
+ExecStart=/usr/bin/dockerd -s overlay2 --log-opt max-size=100m --live-restore
+{% endif %}
+LimitNOFILE=1048576
+LimitNPROC=1048576
+TasksMax=1048576

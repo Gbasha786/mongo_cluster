@@ -1,0 +1,12 @@
+[Unit]
+Description=Taint node before we are sure it is up to date
+Requires=network.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStart=/bin/mv /var/allow_users /var/allow_users_disabled
+SuccessExitStatus=1
+
+[Install]
+WantedBy=basic.target

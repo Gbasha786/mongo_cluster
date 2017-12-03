@@ -1,0 +1,13 @@
+# first pull and startup may take some time
+# default timeout is 60 sec which is not enought in most cases
+export DOCKER_CLIENT_TIMEOUT=300
+export COMPOSE_HTTP_TIMEOUT=300
+export BACKOFF=${2:-3}
+
+# prefixes and paths to make solution working the same way inside dev and prod environment
+export VOLUME_PREFIX=${VOLUME_PREFIX:-""}
+export WEB_SSL_PATH=${WEB_SSL_PATH:-"/etc/nginx/ssl"}
+export OPENX_SSL_PATH=${OPENX_SSL_PATH:-"/etc/mysql/ssl"}
+export RABBITMQ_PATH=${RABBITMQ_PATH:-"/usr/local/etc/rabbitmq"}
+export HOST_IP=$(/bin/hostname -I | awk {'print $1'})
+export HOSTNAME=$(/bin/hostname)

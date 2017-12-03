@@ -1,0 +1,51 @@
+---
+- hosts: all
+  remote_user: ubuntu
+  become: true
+  become_user: root
+  gather_facts: False
+
+  roles:
+    - common/prepare_system
+
+- hosts: all
+  remote_user: ubuntu
+  become: true
+  become_user: root
+
+  pre_tasks:
+
+  - name: create folders for db & logs
+    file: name={{item}} state=directory
+    with_items:
+      - /data/db
+      - /data/logs
+
+  - name: copy docker-compose files
+    template:
+      src={{ item }}
+      dest=/etc/docker-compose
+      owner=root
+      mode=0600
+    with_fileglob:
+      - docker-compose/*
+
+  roles:
+    - common/aws_support
+    - common/locale
+    - common/time
+    - common/disable_swap
+    - common/sudoers
+    - common/docker
+    - { role: common/docker-updater, run: false, taint_on_boot: true }
+    - { role: common/docker-updater, taint_on_boot: true, execution = 1 }
+    - { role: common/docker-updater, taint_on_boot: true, execution = 2 }
+
+  tasks:
+    - name: run docker-updater to apply changes
+      command: /usr/local/bin/docker-updater.sh
+      when: run | bool
+      register: docker_updater
+      until: docker_updater.rc == 0
+      retries: 3
+      delay: 30

@@ -1,0 +1,84 @@
+---
+- name: create docker-compose folder
+  file: name=/etc/docker-compose/ state=directory
+
+- name: deploy docker-updater
+  copy:
+    src=docker-updater.sh
+    dest=/usr/local/bin/docker-updater.sh
+    owner=root
+    mode=0755
+
+- name: deploy docker-updater periodic services
+  copy:
+    src=systemd/{{item}}
+    dest=/etc/systemd/system/{{item}}
+    owner=root
+    mode=0755
+  with_items:
+    - docker-updater.service
+    - docker-updater.timer
+
+- name: create /opt/docker-updater/env.d
+  file: name=/opt/docker-updater/env.d/ state=directory
+
+- name: remove /var/docker-updater-disable file to run docker-updater once
+  file: name=/var/docker-updater-disable state=absent
+  when: run | bool
+
+- name: deploy docker-updater configuration
+  copy:
+    src=env.d/{{item}}
+    dest=/opt/docker-updater/env.d/{{item}}
+    owner=root
+    mode=0640
+  with_items:
+    - general
+
+- name: run docker-updater pull
+  command: /usr/local/bin/docker-updater.sh pull
+  when: run | bool
+  register: docker_updater_pull
+  until: docker_updater_pull.rc == 0
+  retries: 3
+  delay: 30
+  tags:
+    - packer
+
+- name: ensure docker-updater.service is enabled
+  service: name=docker-updater.timer enabled=yes 
+  when: run | bool
+
+- name: workaround to really enable docker-updater
+  command: 'systemctl start docker-updater'
+  register: docker_updater
+  until: docker_updater.rc == 0
+  retries: 3
+  delay: 30
+  changed_when: false
+  when: run | bool
+  tags:
+    - reconfigure
+
+- name: ensure docker-updater.timer is enabled but not running
+  service: name=docker-updater.timer state=stopped enabled=yes 
+  when: run | bool
+  tags:
+    - packer
+
+- name: ensure docker-updater.timer is enabled
+  service: name=docker-updater.timer state=started enabled=yes 
+  when: run | bool
+  tags:
+    - reconfigure
+
+- name: create /var/docker-updater-disable file
+  file: name=/var/docker-updater-disable state=touch
+  when: disable_file
+
+- name: remove /var/docker-updater-disable file
+  file: name=/var/docker-updater-disable state=absent
+  when: not disable_file
+
+- include: taint-on-boot.yml
+  when: taint_on_boot

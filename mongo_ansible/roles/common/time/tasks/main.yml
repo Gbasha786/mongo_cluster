@@ -1,0 +1,10 @@
+---
+- name: set timezone
+  timezone:
+    name: "{{ tz }}"
+
+- name: install ntp
+  apt: name=ntp state=installed
+
+- name: insure ntp enabled on boot and running
+  service: name=ntp enabled=yes state=started

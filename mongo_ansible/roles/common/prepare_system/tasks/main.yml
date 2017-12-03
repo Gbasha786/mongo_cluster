@@ -1,0 +1,13 @@
+---
+- name: apt update
+  raw: export DEBIAN_FRONTEND=noninteractive; apt-get -yq update
+
+- name: make sure we have proper python
+  raw: test -e /usr/bin/python || (export DEBIAN_FRONTEND=noninteractive; apt-get install -yq python-minimal)
+  register: install_python
+  changed_when:
+    - install_python.stdout != ""
+    - install_python.stdout != "\r\n"
+
+- name: create docker-compose folder
+  file: name=/etc/docker-compose/ state=directory

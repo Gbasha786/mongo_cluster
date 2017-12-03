@@ -1,0 +1,20 @@
+---
+- name: swap - remove current swaps from fstab
+  lineinfile:
+    dest: /etc/fstab
+    regexp: '^/[\S]+\s+none\s+swap '
+    state: absent
+
+- name: swap - disable swap
+  command: swapoff --all
+  ignore_errors: yes
+  changed_when: false
+
+- name: persistent swappiness to 0
+  lineinfile:
+    dest: /etc/sysctl.conf
+    regexp: '^vm\.swappiness = \d+'
+    line: vm.swappiness = 0
+
+- name: current swappiness to 0
+  command: sysctl vm.swappiness=0

@@ -1,0 +1,122 @@
+---
+- name: Ensure dependencies are installed.
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - apt-transport-https
+    - ca-certificates
+
+- name: Add Docker apt key.
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+    state: present
+  register: add_repository_key
+  ignore_errors: true
+
+- name: Ensure curl is present (on older systems without SNI).
+  apt: name=curl state=present
+  when: add_repository_key|failed
+
+- name: Add Docker apt key (alternative for older systems without SNI).
+  shell: "curl -sSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -"
+  args:
+    warn: no
+  when: add_repository_key|failed
+
+- name: Add Docker repository.
+  apt_repository:
+    repo: "{{ docker_apt_repository }}"
+    state: present
+    update_cache: yes
+
+- name: create docker folders
+  file: name={{ item }} state=directory
+  with_items:
+    - /etc/systemd/system/docker.service.d
+    - /root/.docker
+
+- name: deploy docker-engine dropin
+  template:
+    src=docker.dropin.j2
+    dest=/etc/systemd/system/docker.service.d/local.conf
+    owner=root
+    mode=0766
+  register: docker_dropin
+
+- name: copy docker config
+  template:
+    src=docker-config.json
+    dest=/root/.docker/config.json
+    owner=root
+    mode=0600
+  register: docker_config
+
+- name: Install Docker.
+  apt: name={{ docker_package }} state=present
+
+- name: Check current docker-compose version.
+  command: docker-compose --version
+  register: docker_compose_current_version
+  changed_when: false
+  failed_when: false
+
+- name: Delete existing docker-compose version if it's different.
+  file:
+    path: "{{ docker_compose_path }}"
+    state: absent
+  when: >
+    docker_compose_current_version.stdout is defined
+    and docker_compose_version not in docker_compose_current_version.stdout
+
+- name: Install Docker Compose (if configured).
+  get_url:
+    url: https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64
+    dest: "{{ docker_compose_path }}"
+    mode: 0755
+
+# Confirm that docker-compose actually runs
+- name: Check docker-compose binary version.
+  command: docker-compose --version
+  register: docker_compose_current_version_binary
+  changed_when: false
+  failed_when: false
+
+- name: Delete existing docker-compose  if it different.
+  file:
+    path: "{{ docker_compose_path }}"
+    state: absent
+  when: >
+    docker_compose_current_version_binary.stderr is defined
+    and "error while loading shared libraries" in docker_compose_current_version_binary.stderr
+
+- name: Install python-pip to hackaround broken docker-compose binary
+  apt: name=python-pip
+  when: >
+    docker_compose_current_version_binary.stderr is defined
+    and "error while loading shared libraries" in docker_compose_current_version_binary.stderr
+
+- name: Pip install docker-compose
+  pip: name=docker-compose version="{{ docker_compose_version }}"
+  when: >
+    docker_compose_current_version_binary.stderr is defined
+    and "error while loading shared libraries" in docker_compose_current_version_binary.stderr
+
+- name: service docker is enabled and started up
+  service: name=docker.service state=started enabled=true
+
+- name: remove all containers
+  shell: '/usr/bin/docker rm -f $( /usr/bin/docker ps -qa )'
+  when: docker_dropin.changed
+  failed_when: false
+
+- name: reload docker service
+  shell: '/bin/systemctl daemon-reload'
+  when: docker_dropin.changed
+
+- name: restart docker
+  service: name=docker.service state=restarted
+  when: docker_config.changed or docker_dropin.changed
+
+

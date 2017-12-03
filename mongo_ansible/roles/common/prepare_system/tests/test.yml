@@ -1,0 +1,7 @@
+---
+- hosts: all
+  remote_user: root
+  become: true
+  gather_facts: False
+  roles:
+    - '../../prepare_system'

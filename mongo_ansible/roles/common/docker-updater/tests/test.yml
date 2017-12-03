@@ -1,0 +1,41 @@
+---
+- hosts: all
+  remote_user: root
+  become: true
+  gather_facts: False
+
+  roles:
+    - ../../prepare_system
+
+
+- hosts: all
+  remote_user: root
+  become: true
+  pre_tasks:
+    - debug:
+        msg: This role depends on 'docker' role and requires at least
+             one docker-compose file to be provided. 
+    - name: create docker-compose folder
+      file: name=/etc/docker-compose/ state=directory
+
+    - name: create a test container (otherwise role test will fail)
+      copy:
+        content: |
+          ---
+          version: '2'
+          services:
+            nginx-test:
+              image: nginx:alpine
+              container_name: nginx-test
+              logging:
+                driver: json-file
+              ports:
+                - "80:80"
+        dest: /etc/docker-compose/nginx-test.yml
+        owner: root
+        mode: 0644
+
+  roles:
+    - { role: ../../docker, docker_enable_fluentd: false }
+    - '../../docker-updater'
+

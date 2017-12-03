@@ -1,0 +1,23 @@
+---
+- hosts: all
+  remote_user: root
+  become: true
+  gather_facts: False
+
+  roles:
+    - '../../prepare_system'
+
+
+- hosts: all
+  remote_user: root
+  become: true
+  vars:
+    sudoers_files:
+      qauser: "qauser\tALL=(ALL:ALL)\tNOPASSWD: /usr/bin/docker\r\n"
+
+  pre_tasks:
+    - debug:
+        var: sudoers_files
+
+  roles:
+    - '../../sudoers'
