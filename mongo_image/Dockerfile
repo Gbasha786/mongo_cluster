@@ -6,7 +6,6 @@ RUN apt-get update && apt-get install -y mongodb-org
 RUN mkdir -p /data/db
 RUN chown -R mongodb:mongodb /data/db
 
-
-VOLUME ["/data/db"]
+COPY mongod.conf /etc/mongod.conf
 EXPOSE 27017
-ENTRYPOINT ["/usr/bin/mongod"]
+ENTRYPOINT ["/usr/bin/mongod","--config","/etc/mongod.conf"]

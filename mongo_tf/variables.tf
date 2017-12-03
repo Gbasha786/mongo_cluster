@@ -18,11 +18,6 @@ description = "Define volume size for database"
 default = "1"
 }
 
-variable "domain_name" {
-description = "domain name"
-default = "chubukin.de"
-}
-
 variable "amis" {
 description = "Base AMI to launch the instances"
 default = {
