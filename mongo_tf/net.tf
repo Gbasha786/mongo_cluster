@@ -47,6 +47,7 @@ resource "aws_internet_gateway" "gw" {
     }
 }
 
+# Create route to the internet 
 resource "aws_route" "internet_access" {
   route_table_id         = "${aws_vpc.mongo-vpc.main_route_table_id}"
   destination_cidr_block = "0.0.0.0/0"
@@ -88,6 +89,13 @@ resource "aws_security_group" "mongo-sec-gr" {
     from_port = 27017
     to_port = 27017
     protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
