@@ -20,5 +20,5 @@ default  = "chubukin.de."
 
 variable "volume_size_for_db" {
 description = "Define volume size for database"
-default = "1"
+default = "1000"
 }
