@@ -13,15 +13,12 @@ description = "Key name for SSHing into EC2"
 default = "mongo-tf"
 }
 
+variable "domain_name" {
+description = "domain name for mongo servers"
+default  = "chubukin.de."
+}
+
 variable "volume_size_for_db" {
 description = "Define volume size for database"
 default = "1"
-}
-
-variable "amis" {
-description = "Base AMI to launch the instances"
-default = {
-us-east-1 = "ami-aa2ea6d0"
-us-east-2 = "ami-aa2ea6d0"
-}
 }
