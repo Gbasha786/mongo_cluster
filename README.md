@@ -43,7 +43,9 @@ You will get 3 Ubuntu nodes (mongo-1a, mongo-1b, mongo-1c) in VPC in N.Virginia 
 
 ### Applying an Ansible playbook to created nodes
 
-1. `cd mongo_ansible`
-1. `ansible-playbook -vvvv -uubuntu -i inventory_file playbook.yml --private-key=~/.ssh/mongo-tf`
+```bash
+cd mongo_ansible`
+ansible-playbook -vvvv -uubuntu -i inventory_file playbook.yml --private-key=~/.ssh/mongo-tf
+```
 
 These will install Docker on the servers, deliver the docker-compose file, create system job to run it. Database files and logs saved to the host file system `/data/db` & `/data/logs`
